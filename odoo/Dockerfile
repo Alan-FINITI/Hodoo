@@ -1,4 +1,4 @@
-FROM ghcr.io/camptocamp/docker-odoo-project:17.0-5.1.0.0.0
+FROM ghcr.io/camptocamp/docker-odoo-project:17.0-master-20250130
 LABEL maintainer="Kal-It"
 ARG UID=999
 # Steps are grouped by dependency
@@ -8,8 +8,8 @@ ARG UID=999
 # frequency: rarely
 # cost:      high
 COPY ./*requirements.txt /odoo/
-COPY ./before-migrate-entrypoint.d/* /before-migrate-entrypoint.d/
-COPY ./start-entrypoint.d/* /start-entrypoint.d/
+COPY ./before-migrate-entrypoint.d /odoo/before-migrate-entrypoint.d
+COPY ./start-entrypoint.d /odoo/start-entrypoint.d
 
 # CSV Loader
 # `parallel` + `importer.sh` are needed to load heavy files
@@ -35,42 +35,33 @@ COPY ./history.yml /odoo/
 USER root
 # Install additional debian and python packages if needed
 RUN set -x; \
-        apt-get update \
-#        && pip install --upgrade pip \
-        && apt-get install -y --no-install-recommends \
-        parallel libmagic1 \
-        cups libcups2-dev python3-dev\
-        # if you need some dev packages for python packages, you need to clean them afterwards
-        build-essential \
-        git \
-        # cleaning of dev packages
-        && apt-get remove -y build-essential \
-        # && apt-get purge -y --auto-remove -o APT::AutoRemove::RecommendsImportant=false -o APT::AutoRemove::SuggestsImportant=false \
-        && apt-get clean \
-        && rm -rf /var/lib/apt/lists/*
+    apt-get update \
+    # && pip install --upgrade pip \
+    && apt-get install -y --no-install-recommends \
+    # if you need some dev packages for python packages, you need to clean them afterwards
+    build-essential parallel libsasl2-dev libldap2-dev libssl-dev libmagic1 libpq-dev python3-dev \
+    libffi-dev pkg-config libcairo2-dev libgirepository1.0-dev git cmake ffmpeg libsm6 libxext6 \
+    # cleaning of dev packages
+    && apt-get remove -y build-essential \
+    # && apt-get purge -y --auto-remove -o APT::AutoRemove::RecommendsImportant=false -o APT::AutoRemove::SuggestsImportant=false \
+    && apt-get clean \
+    && rm -rf /var/lib/apt/lists/*
 
 # Entrypoints
-RUN chmod +x /before-migrate-entrypoint.d/* \
-    && chmod +x /start-entrypoint.d/
+RUN chmod +x /odoo/before-migrate-entrypoint.d/* \
+    && chmod +x /odoo/start-entrypoint.d/*
 
 RUN usermod -u $UID -o odoo
 RUN groupmod -g $UID odoo
 
 RUN chown -R odoo:odoo /odoo
+
 USER odoo
-RUN pip3 install -e /odoo
-RUN pip3 install -e /odoo/src
-RUN ls /odoo/src
-
-## Tools of odoo-template
-# frequency: seldom
-# cost:      light
-
-# depends on ./setup.py ./src, ./songs and ./VERSION
-RUN cd /odoo && pip3 install -r requirements.txt
-
-## PLATFORM: Add this line to ADDONS_PATH if hosting is on cloud platform
-# /odoo/external-src/odoo-cloud-platform, \
+WORKDIR /odoo
+# run in a virtualenv
+RUN /odoo/.venv/bin/pip install --user -r requirements.txt
+RUN /odoo/.venv/bin/pip install -r /odoo/src/requirements.txt
+RUN /odoo/.venv/bin/pip install -e /odoo/src
 
 ## Environment
 # frequency: sometimes

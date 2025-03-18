@@ -16,10 +16,4 @@ migration:
               - anthem songs.install.data_full::main
       addons:
         upgrade:
-          # OCA
-
-          #### oca/web
-#          - web_environment_ribbon
-
-          # local-src
-          # - addon
+          - base
