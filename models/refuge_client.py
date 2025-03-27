@@ -9,6 +9,7 @@ class RefugeClient(models.Model):
     fidelity_points = fields.Integer(string="Points de fidélité", compute="calculate_fidelity_points")
     discount = fields.Float(string="Réduction totale", compute="calculate_discount", default=1)
     order_ids = fields.One2many(string="Order Ids", comodel_name="refuge.order", inverse_name="client_id")
+
     @api.model
     def calculate_discount(self):
         for record in self:
