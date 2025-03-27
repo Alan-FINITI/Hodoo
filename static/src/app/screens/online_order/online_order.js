@@ -5,7 +5,7 @@ import { useRefuge } from "@refuge_aventuriers/app/store/refuge_hook";
 import { Component } from "@odoo/owl";
 
 export class BagCommandScreen extends Component {
-    static template = "refuge_aventuriers.BagCommandScreen";
+    static template = "refuge_aventuriers.OnlineOrderScreen";
 
     setup() {
         this.refuge = useRefuge();
@@ -29,4 +29,4 @@ export class BagCommandScreen extends Component {
 
 }
 
-registry.category("refuge_screens").add("BagCommandScreen", BagCommandScreen);
+registry.category("refuge_screens").add("OnlineOrderScreen", OnlineOrderScreen);
