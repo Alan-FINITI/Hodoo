@@ -14,13 +14,17 @@ class RefugeClient(models.Model):
     def calculate_discount(self):
         for record in self:
             if record.fidelity_points >= 1000:
-                record.discount = 0.8
+                record.discount = 0.80
+                return 0.80
             elif record.fidelity_points >= 500:
                 record.discount = 0.85
+                return 0.85
             elif record.fidelity_points >= 200:
                 record.discount = 0.90
+                return 0.90
             elif record.fidelity_points >= 100:
                 record.discount = 0.95
+                return 0.95
 
     def calculate_fidelity_points(self):
         for record in self:

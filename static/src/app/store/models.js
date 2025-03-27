@@ -1,12 +1,8 @@
 /** @odoo-module */
 
-export class Teacher {
+export class RefugeClient {
 }
 
-export class Student {
-
-}
-
-export class Mark {
+export class RefugeOrder {
 
 }

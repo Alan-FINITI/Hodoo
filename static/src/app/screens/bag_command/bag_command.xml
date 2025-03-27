@@ -25,7 +25,7 @@
                  <span>Discount: <t t-esc="props.order.client_id.discount"/></span>
              </div>
              <div>
-                 <span>Total Order Price: <t t-esc="props.order.amount_total"/></span>
+                 <span>Total Order Price: <t t-esc="pos.order.amount_total"/></span>
              </div>
 
              <div class="order-button-container">

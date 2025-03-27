@@ -47,3 +47,12 @@ class OrderRefuge(models.Model):
     def cancel_order(self):
         for order in self:
             order.state = 'cancel'
+
+    @api.onchange("partner_id")
+    def add_client(self, client_id):
+        for record in self:
+            client = self.env['res.partner'].browse(client_id)
+            discount_percentage = client.calculate_discount()
+            _logger(discount_percentage)
+            for line in record.lines:
+                line.discount = discount_percentage
