@@ -2,24 +2,25 @@
 <templates id="template" xml:space="preserve">
      <t t-name="refuge_aventuriers.BagCommandScreen">
         <div class="bag-command-container">
-<!--            <table class="command-table">-->
-<!--                  <thead>-->
-<!--                    <tr>-->
-<!--                      <th class="table-header">Product Name</th>-->
-<!--                      <th class="table-header">Quantity</th>-->
-<!--                      <th class="table-header">Price</th>-->
-<!--                    </tr>-->
-<!--                  </thead>-->
-<!--                  <tbody>-->
-<!--                    <t t-foreach="props.order.order_line_ids" t-as="order_line" t-key="order_line.id">-->
-<!--                      <tr class="table-row">-->
-<!--                        <td class="table-data" t-esc="order_line.name"></td>-->
-<!--                        <td class="table-data" t-esc="order_line.product_uom_qty"></td>-->
-<!--                        <td class="table-data" t-esc="order_line.price_unit"></td>-->
-<!--                      </tr>-->
-<!--                    </t>-->
-<!--                  </tbody>-->
-<!--            </table>-->
+            <span>command de bz frr trop le fun</span>
+            <table class="command-table">
+                  <thead>
+                    <tr>
+                      <th class="table-header">Product Name</th>
+                      <th class="table-header">Quantity</th>
+                      <th class="table-header">Price</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <t t-foreach="pos.order.order_line_ids" t-as="order_line" t-key="order_line.id">
+                      <tr class="table-row">
+                        <td class="table-data" t-esc="order_line.name"></td>
+                        <td class="table-data" t-esc="order_line.product_uom_qty"></td>
+                        <td class="table-data" t-esc="order_line.price_unit"></td>
+                      </tr>
+                    </t>
+                  </tbody>
+            </table>
 
 <!--             <div>-->
 <!--                 <span>Discount: <t t-esc="props.order.client_id.discount"/></span>-->

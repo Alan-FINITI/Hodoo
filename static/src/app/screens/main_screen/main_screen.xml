@@ -1,7 +1,15 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <templates id="template" xml:space="preserve">
      <t t-name="refuge_aventuriers.MainScreen">
-         <p>Coucou alban tupu</p>
-
+         <ul id ="main-list">
+<!--                 <li>-->
+<!--                     <div-->
+<!--                  >nn</div>-->
+<!--                 </li>-->
+                 <li>
+                     <div
+                  t-on-click="() => refuge.showScreen('BagCommandScreen')">commande</div>
+                 </li>
+             </ul>
     </t>
 </templates>
