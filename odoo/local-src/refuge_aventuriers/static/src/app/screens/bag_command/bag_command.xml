@@ -1,37 +1,46 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <templates id="template" xml:space="preserve">
-  <t t-name="refuge_aventuriers.BagCommandScreen" owl="1">
-    <div class="bag-command-container">
-      <span>Commande trop le fun</span>
-      <table class="command-table">
-        <thead>
-          <tr>
-            <th class="table-header">Product Name</th>
-            <th class="table-header">Quantity</th>
-            <th class="table-header">Price</th>
-          </tr>
-        </thead>
-        <tbody>
-          <t t-foreach="props.order.order_line_ids" t-as="order_line" t-key="order_line.id">
-            <tr class="table-row">
-              <td class="table-data" t-esc="order_line.name"></td>
-              <td class="table-data" t-esc="order_line.product_uom_qty"></td>
-              <td class="table-data" t-esc="order_line.price_unit"></td>
-            </tr>
-          </t>
-        </tbody>
-      </table>
+    <t t-name="refuge_aventuriers.BagCommandScreen">
+        <div class="bag-command-container">
+            <span>commande de bz frr trop le fun</span>
 
-      <div>
-        <span>Discount: <t t-esc="props.order.discount"/></span>
-      </div>
-      <div>
-        <span>Total Order Price: <t t-esc="props.order.amount_total"/></span>
-      </div>
+            <table class="command-table">
+                <thead>
+                    <tr>
+                        <th class="table-header">Nom du produit</th>
+                        <th class="table-header">Quantité</th>
+                        <th class="table-header">Prix</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <t t-foreach="lastOrder.orderlines" t-as="order_line" t-key="order_line.id">
+                        <tr class="table-row">
+                            <td class="table-data" t-esc="order_line.product.display_name"></td>
 
-      <div class="order-button-container">
-        <button type="button" t-on-click="on_order_button_click">Commander</button>
-      </div>
-    </div>
-  </t>
+                            <td class="table-data">
+                                <input type="number"
+                                       min="0"
+                                       t-att-value="order_line.quantity"
+                                       t-on-change="() => on_change_quantity(order_line.product.id, $event.target.value)" />
+                            </td>
+
+                            <td class="table-data" t-esc="order_line.price_display"></td>
+                        </tr>
+                    </t>
+                </tbody>
+            </table>
+
+            <div>
+                <span>Remise client : <t t-esc="props.order.client_id.discount"/> %</span>
+            </div>
+
+            <div>
+                <span>Prix total de la commande : <t t-esc="props.order.amount_total"/> €</span>
+            </div>
+
+            <div class="order-button-container">
+                <button type="button" t-on-click="on_order_button_click">Commander</button>
+            </div>
+        </div>
+    </t>
 </templates>
