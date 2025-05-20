@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<templates id="template" xml:space="preserve">
+     <t t-name="refuge_aventuriers.OrderListScreen" owl="1">
+        <div class="order-list-screen">
+            <h2>Commandes en cours</h2>
+            <table class="table table-striped">
+                <thead>
+                    <tr>
+                        <th>Table</th>
+                        <th>Prix</th>
+                        <th>Statut</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <t t-foreach="props.orders" t-as="order" t-key="order.id">
+                        <tr>
+                            <td><t t-esc="order.table_number"/></td>
+                            <td><t t-esc="order.amount_total"/> €</td>
+                            <td><t t-esc="order.state"/></td>
+                            <td>
+                                <button class="btn btn-primary" t-on-click="() => props.showOrderDetails(order.id)">
+                                    Voir détails
+                                </button>
+                            </td>
+                        </tr>
+                    </t>
+                </tbody>
+            </table>
+        </div>
+    </t>
+    <t t-name="OrderDetailScreen" owl="1">
+        <div class="order-detail-screen">
+            <h2>Détails de la commande</h2>
+            <table class="table table-bordered">
+                <thead>
+                    <tr>
+                        <th>Produit</th>
+                        <th>Quantité</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <t t-foreach="props.products" t-as="product" t-key="product.id">
+                        <tr>
+                            <td><t t-esc="product.name"/></td>
+                            <td><t t-esc="product.qty"/></td>
+                        </tr>
+                    </t>
+                </tbody>
+            </table>
+            <button class="btn btn-secondary mt-3" t-on-click="props.goBack">
+                Retour
+            </button>
+        </div>
+    </t>
+</templates>
