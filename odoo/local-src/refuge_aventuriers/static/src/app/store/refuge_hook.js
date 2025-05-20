@@ -3,6 +3,6 @@
 import { useState } from "@odoo/owl";
 import { useService } from "@web/core/utils/hooks";
 
-export function useTetras() {
-    return useState(useService("tetras"));
+export function useRefuge() {
+    return useState(useService("refuge"));
 }

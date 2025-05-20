@@ -1,6 +1,6 @@
 /** @odoo-module */
 
-import { Chrome } from "@tetras_school_management/app/tetras_app";
+import { Chrome } from "@refuge_aventuriers/app/refuge_app";
 import { templates } from "@web/core/assets";
 import { App } from "@odoo/owl";
 import { _t } from "@web/core/l10n/translation";
@@ -10,7 +10,7 @@ import { session } from "@web/session";
 
 
 // The following is mostly a copy of startWebclient but without any of the legacy stuff
-(async function startTetrasApp() {
+(async function startRefugeApp() {
     odoo.info = {
         db: session.db,
         server_version: session.server_version,
@@ -23,7 +23,7 @@ import { session } from "@web/session";
     await startServices(env);
     // start application
     const app = new App(Chrome, {
-        name: "Odoo Tetras",
+        name: "Odoo Refuge",
         env,
         templates,
         dev: env.debug,

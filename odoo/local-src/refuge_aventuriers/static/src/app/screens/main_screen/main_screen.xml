@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<templates id="template" xml:space="preserve">
+     <t t-name="refuge_aventuriers.MainScreen">
+         <ul id ="main-list">
+<!--                 <li>-->
+<!--                     <div-->
+<!--                  >nn</div>-->
+<!--                 </li>-->
+                 <li>
+                     <div
+                  t-on-click="() => refuge.showScreen('BagCommandScreen', { order: lastOrder })">commande</div>
+                 </li>
+              <li>
+                     <div
+                  t-on-click="() => refuge.showScreen('BagCommandScreen')">produits</div>
+                 </li>
+             <li>
+                     <div
+                  t-on-click="() => refuge.showScreen('OrderListScreen')">Liste de commandes</div>
+                 </li>
+             </ul>
+    </t>
+</templates>

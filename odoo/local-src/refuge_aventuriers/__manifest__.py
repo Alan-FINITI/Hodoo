@@ -1,21 +1,16 @@
 {
-    "name": "Tetras - School Management",
+    "name": "Refuge des aventuriers",
     "version": "17.0.1.0.0",
-    "depends": ["base"],
+    "depends": ["base", "point_of_sale"],
     "author": "Kal-It",
     "website": "https://kal-it.fr",
     "license": "GPL-3 or any later version",
     "category": "Tools",
     "data": [
-        "security/ir.model.access.csv",
-        "views/grade_views.xml",
-        "views/student_views.xml",
-        "views/teacher_views.xml",
-        "views/menu_views.xml",
-        "views/tetras_assets_index.xml",
+        "views/refuge_assets_index.xml",
     ],
     "assets": {
-        "tetras_school_management._assets_tetras": [
+        "refuge_aventuriers._assets_refuge": [
 
             # 'webclient' bootstrap customization layer
             ('include', 'web._assets_helpers'),
@@ -49,14 +44,14 @@
             ('include', 'web._assets_core'),
             ('remove', 'web/static/src/core/errors/error_handlers.js'),
 
-            "tetras_school_management/static/src/**/*",
+            "refuge_aventuriers/static/src/**/*",
 
             # main.js boots the pos app, it is only included in the prod bundle as tests mount the app themselves
-            ('remove', 'tetras_school_management/static/src/app/main.js'),
+            ('remove', 'refuge_aventuriers/static/src/app/main.js'),
         ],
-        'tetras_school_management.assets_prod': [
-            ('include', 'tetras_school_management._assets_tetras'),
-            'tetras_school_management/static/src/app/main.js',
+        'refuge_aventuriers.assets_prod': [
+            ('include', 'refuge_aventuriers._assets_refuge'),
+            'refuge_aventuriers/static/src/app/main.js',
         ],
     }
 

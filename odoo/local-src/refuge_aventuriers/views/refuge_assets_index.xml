@@ -1,10 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
 <odoo>
 
-    <template id="tetras_school_management.index" name="Tetras Index">&lt;!DOCTYPE html&gt;
+    <template id="refuge_aventuriers.index" name="Refuge Index">&lt;!DOCTYPE html&gt;
         <html>
             <head>
-                <title>Tetras</title>
+                <title>Refuge des Aventuriers</title>
 
                 <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1"/>
                 <meta http-equiv="content-type" content="text/html, charset=utf-8"/>
@@ -31,9 +31,9 @@
                 <t t-call="web.conditional_assets_tests">
                     <t t-set="ignore_missing_deps" t-value="True"/>
                 </t>
-                <t t-call-assets="tetras_school_management.assets_prod"/>
+                <t t-call-assets="refuge_aventuriers.assets_prod"/>
             </head>
-            <body class="tetras">
+            <body class="refuge">
             </body>
         </html>
     </template>
