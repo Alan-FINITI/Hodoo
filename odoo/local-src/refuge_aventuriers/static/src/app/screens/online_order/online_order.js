@@ -14,6 +14,7 @@ export class OnlineOrderScreen extends Component {
         onMounted(async () => {
             try {
                 const result = await this.rpc("/refuge_aventuriers/load_refuge_data");
+                console.log(result)
                 // Assure-toi d'accéder aux produits selon ton backend
                 this.allProducts.splice(0);
                 this.allProducts.push(...(result["product.template"] || []));

@@ -35,8 +35,8 @@
                             </td>
                             <td>
                                 <input type="number"
-                                       min="1"
-                                       t-att-value="1"
+                                       min="0"
+                                       t-att-value="0"
                                        t-on-change="(e) => on_quantity_change(product.id, e.target.value)" />
                             </td>
                             <td>
