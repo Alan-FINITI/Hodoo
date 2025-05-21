@@ -33,8 +33,32 @@ export class BagCommandScreen extends Component {
 //                }
 //            ]);
 //    }
+async on_change_quantity(productId, newQty) {
+    try {
+        // Conversion en nombre entier (important pour éviter les erreurs Odoo)
+        const quantity = parseInt(newQty, 10);
+        if (isNaN(quantity) || quantity < 0) {
+            console.warn("Quantité invalide :", newQty);
+            return;
+        }
 
+        const response = await this.refuge.orm.call("refuge.order", "update_product_quantity", [
+            this.order.id,
+            productId,
+            quantity
+        ]);
 
+        if (response.error) {
+            console.error("Erreur Odoo :", response.error);
+        } else {
+            console.log("Quantité mise à jour :", response.qty);
+        }
+
+    } catch (error) {
+        console.error("Erreur lors de l’appel RPC :", error);
+    }
+
+}
 }
 
 

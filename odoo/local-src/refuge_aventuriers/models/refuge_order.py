@@ -5,7 +5,6 @@ _logger = logging.getLogger(__name__)
 
 
 class OrderRefuge(models.Model):
-
     _name = "refuge.order"
     _description = "refuge order online "
     _inherit = "pos.order"
@@ -52,3 +51,23 @@ class OrderRefuge(models.Model):
             _logger(discount_percentage)
             for line in record.lines:
                 line.discount = discount_percentage
+
+
+    @api.model
+
+
+    def update_product_quantity(self, order_id, product_id, quantity):
+        order = self.browse(order_id)
+        if not order.exists():
+            return {'error': 'Order not found'}
+
+        order_line = order.lines.filtered(lambda l: l.product_id.id == product_id)
+        if not order_line:
+            return {'error': 'Product not found in order'}
+
+        order_line.qty = quantity
+        return {
+            'success': True,
+            'qty': order_line.qty,
+            'line_id': order_line.id,
+        }

@@ -2,17 +2,13 @@
 <templates id="template" xml:space="preserve">
      <t t-name="refuge_aventuriers.MainScreen">
          <ul id ="main-list">
-<!--                 <li>-->
-<!--                     <div-->
-<!--                  >nn</div>-->
-<!--                 </li>-->
                  <li>
                      <div
                   t-on-click="() => refuge.showScreen('BagCommandScreen', { order: lastOrder })">commande</div>
                  </li>
               <li>
                      <div
-                  t-on-click="() => refuge.showScreen('BagCommandScreen')">produits</div>
+                  t-on-click="() => refuge.showScreen('OnlineOrderScreen')">produits</div>
                  </li>
              <li>
                      <div

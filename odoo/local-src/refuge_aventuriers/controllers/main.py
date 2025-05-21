@@ -14,6 +14,21 @@ class RefugeController(http.Controller):
         response.headers["Cache-Control"] = "no-store"
         return response
 
+    @http.route('/refuge_aventuriers/load_refuge_data', type='json', auth='public', csrf=False)
+    def load_refuge_data(self):
+        return request.env['refuge.management'].load_refuge_data()
+    @http.route('/refuge_aventuriers/get_pos_products', type='json', auth='public', csrf=False)
+    def get_pos_products(self):
+        products = request.env['product.product'].sudo().search([
+            ('available_in_pos', '=', True),
+            ('sale_ok', '=', True)
+        ])
+        return [{
+            'id': p.id,
+            'display_name': p.display_name,
+            'lst_price': p.lst_price,
+        } for p in products]
+
     @http.route("/orders/get", type="json", auth="public", csrf=False)
     def get_orders(self, **kwargs):
         orders = request.env["refuge.order"].sudo().search([])
