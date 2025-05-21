@@ -1,31 +1,30 @@
 /** @odoo-module */
 
 import { registry } from "@web/core/registry";
-import { useRefuge } from "@refuge_aventuriers/app/store/refuge_hook";
-import { Component } from "@odoo/owl";
+import { Component, onMounted, useState } from "@odoo/owl";
+import { useService } from "@web/core/utils/hooks";  // <-- ici
 
 export class OnlineOrderScreen extends Component {
     static template = "refuge_aventuriers.OnlineOrderScreen";
 
     setup() {
-        this.refuge = useRefuge();
+        this.allProducts = useState([]);
+        this.rpc = useService("rpc"); // <-- ici
+
+        onMounted(async () => {
+            try {
+                const result = await this.rpc("/refuge_aventuriers/load_refuge_data");
+                // Assure-toi d'accéder aux produits selon ton backend
+                this.allProducts.splice(0);
+                this.allProducts.push(...(result["product.template"] || []));
+                const order = await this.rpc("/refuge_aventuriers/new_order");
+                console.log(order)
+                this.orderId = order.Id;
+            } catch (e) {
+                console.error("Erreur RPC :", e);
+            }
+        });
     }
-
-
-    onInput(ev, field) {
-        this.props.order[field] = ev.target.value;
-        this.refuge.orm.call("refuge.order", "write", [this.props.order.id, this.props.order])
-    }
-
-//    on_order_button_click(field, value){
-//    this.refuge.orm.call("refuge.order", "write", [
-//                this.props.order.id,
-//                {
-//                    state: "Envoyé",
-//                }
-//            ]);
-//    }
-
 
 }
 

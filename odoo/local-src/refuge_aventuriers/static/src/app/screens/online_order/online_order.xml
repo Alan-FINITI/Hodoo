@@ -1,37 +1,60 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <templates id="template" xml:space="preserve">
-     <t t-name="refuge_aventuriers.OnlineOrderScreen">
-        <div class="online-order-container">
-            <span>command de bz frr trop le fun</span>
-<!--            <table class="command-table">-->
-<!--                  <thead>-->
-<!--                    <tr>-->
-<!--                      <th class="table-header">Product Name</th>-->
-<!--                      <th class="table-header">Quantity</th>-->
-<!--                      <th class="table-header">Price</th>-->
-<!--                    </tr>-->
-<!--                  </thead>-->
-<!--                  <tbody>-->
-<!--                    <t t-foreach="pos.order.order_line_ids" t-as="order_line" t-key="order_line.id">-->
-<!--                      <tr class="table-row">-->
-<!--                        <td class="table-data" t-esc="order_line.name"></td>-->
-<!--                        <td class="table-data" t-esc="order_line.product_uom_qty"></td>-->
-<!--                        <td class="table-data" t-esc="order_line.price_unit"></td>-->
-<!--                      </tr>-->
-<!--                    </t>-->
-<!--                  </tbody>-->
-<!--            </table>-->
+    <t t-name="refuge_aventuriers.OnlineOrderScreen">
 
-<!--             <div>-->
-<!--                 <span>Discount: <t t-esc="props.order.client_id.discount"/></span>-->
-<!--             </div>-->
-<!--             <div>-->
-<!--                 <span>Total Order Price: <t t-esc="pos.order.amount_total"/></span>-->
-<!--             </div>-->
+            <h2>Produits disponibles</h2>
+            <table class="product-table">
+                <thead>
+                    <tr>
+                        <th>Image</th>
+                        <th>Produit</th>
+                        <th>Prix</th>
+                        <th>Ingrédients</th>
+                        <th>Quantité</th>
+                        <th>Action</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <t t-foreach="allProducts" t-as="product" t-key="product.id">
+                        <tr>
+                            <td>
+                                <img t-att-src="product.image_url" alt="Image" style="height: 50px;" />
+                            </td>
+                            <td t-esc="product.name" />
+                            <td><t t-esc="product.list_price" /> €</td>
+                            <td>
+                                <ul>
+                                    <t t-foreach="product.ingredients" t-as="ing" t-key="ing.product_name">
+                                        <li>
+                                            <t t-esc="ing.product_name" /> —
+                                            <t t-esc="ing.quantity" />
+                                            <t t-esc="ing.uom" />
+                                        </li>
+                                    </t>
+                                </ul>
+                            </td>
+                            <td>
+                                <input type="number"
+                                       min="1"
+                                       t-att-value="1"
+                                       t-on-change="(e) => on_quantity_change(product.id, e.target.value)" />
+                            </td>
+                            <td>
+                                <button type="button"
+                                        t-on-click="() => on_add_to_cart(product.id)">
+                                    Ajouter au panier
+                                </button>
+                            </td>
+                        </tr>
+                    </t>
+                </tbody>
+            </table>
 
-<!--             <div class="order-button-container">-->
-<!--                <button type="button" t-on-click="on_order_button_click">Order</button>-->
-<!--            </div>-->
-        </div>
+            <div class="view-cart-container">
+                <button type="button" t-on-click="on_view_cart">
+                    Voir le panier
+                </button>
+            </div>
+
     </t>
 </templates>

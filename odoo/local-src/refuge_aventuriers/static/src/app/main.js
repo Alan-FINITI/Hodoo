@@ -8,7 +8,6 @@ import { hasTouch } from "@web/core/browser/feature_detection";
 import { makeEnv, startServices } from "@web/env";
 import { session } from "@web/session";
 
-
 // The following is mostly a copy of startWebclient but without any of the legacy stuff
 (async function startRefugeApp() {
     odoo.info = {
@@ -38,3 +37,4 @@ import { session } from "@web/session";
     }
     odoo.__WOWL_DEBUG__ = { root };
 })();
+

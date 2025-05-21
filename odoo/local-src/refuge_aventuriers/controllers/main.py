@@ -14,6 +14,54 @@ class RefugeController(http.Controller):
         response.headers["Cache-Control"] = "no-store"
         return response
 
+    @http.route('/refuge_aventuriers/load_refuge_data', type='json', auth='public', csrf=False)
+    def load_refuge_data(self):
+        return request.env['refuge.management'].load_refuge_data()
+
+    @http.route('/refuge_aventuriers/new_order', type='json', auth='public', csrf=False)
+    def new_order(self):
+        PosOrder = request.env['pos.order'].sudo()
+        Product = request.env['product.product'].sudo()
+        PosSession = request.env['pos.session'].sudo()
+        # Récupérer la session POS active
+        active_session = PosSession.search([('state', '=', 'opened')], limit=1)
+        # if not active_session:
+        #     return {
+        #         'error': 'No active POS session found.',
+        #     }
+        # # Préparer les lignes de commande avec une ligne de base vide
+        order_lines = []
+        generic_product = Product.search([], limit=1)  # Juste obtenir un produit disponible
+        if generic_product:
+            order_lines = [(0, 0, {
+                'product_id': generic_product.id,
+                'qty': 0,
+                'price_unit': 0.0,
+                'price_subtotal': 0.0,
+                'price_subtotal_incl': 0.0,
+                'qty_returned': 0,
+                'discount': 0,
+            })]
+        order_vals = {
+            'order_line': order_lines,
+            'session_id': active_session.id,  # Ajouter l'ID de la session active
+        }
+        new_order = PosOrder.create(order_vals)
+
+        return new_order
+
+    @http.route('/refuge_aventuriers/get_pos_products', type='json', auth='public', csrf=False)
+    def get_pos_products(self):
+        products = request.env['product.product'].sudo().search([
+            ('available_in_pos', '=', True),
+            ('sale_ok', '=', True)
+        ])
+        return [{
+            'id': p.id,
+            'display_name': p.display_name,
+            'lst_price': p.lst_price,
+        } for p in products]
+
     @http.route("/orders/get", type="json", auth="public", csrf=False)
     def get_orders(self, **kwargs):
         orders = request.env["refuge.order"].sudo().search([])

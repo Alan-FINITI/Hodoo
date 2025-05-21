@@ -43,7 +43,7 @@ async on_change_quantity(productId, newQty) {
         }
 
         const response = await this.refuge.orm.call("refuge.order", "update_product_quantity", [
-            this.lastOrder.id,
+            this.order.id,
             productId,
             quantity
         ]);
