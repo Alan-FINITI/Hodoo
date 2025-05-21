@@ -73,7 +73,7 @@ class RefugeManagement(models.Model):
         for product in products:
             if product['available_in_pos'] :
                 # and product['qty_available']
-                self._logger.info(product.id)
+                # self._logger.info(product)
                 # Ajouter l'URL de l'image
                 if product.get('image_1920'):
                     product[

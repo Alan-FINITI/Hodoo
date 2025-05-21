@@ -1,60 +1,40 @@
-<?xml version="1.0" encoding="UTF-8"?>
 <templates id="template" xml:space="preserve">
-    <t t-name="refuge_aventuriers.OnlineOrderScreen">
-
-            <h2>Produits disponibles</h2>
-            <table class="product-table">
+    <t t-name="refuge_aventuriers.OnlineOrderScreen" owl="1">
+        <div class="container mt-5">
+            <h1 class="mb-4">Commandes en ligne</h1>
+            <table class="table table-striped">
                 <thead>
                     <tr>
-                        <th>Image</th>
-                        <th>Produit</th>
+                        <th>Nom</th>
+                        <th>Description</th>
                         <th>Prix</th>
-                        <th>Ingrédients</th>
                         <th>Quantité</th>
                         <th>Action</th>
                     </tr>
                 </thead>
                 <tbody>
-                    <t t-foreach="allProducts" t-as="product" t-key="product.id">
-                        <tr>
-                            <td>
-                                <img t-att-src="product.image_url" alt="Image" style="height: 50px;" />
-                            </td>
-                            <td t-esc="product.name" />
-                            <td><t t-esc="product.list_price" /> €</td>
-                            <td>
-                                <ul>
-                                    <t t-foreach="product.ingredients" t-as="ing" t-key="ing.product_name">
-                                        <li>
-                                            <t t-esc="ing.product_name" /> —
-                                            <t t-esc="ing.quantity" />
-                                            <t t-esc="ing.uom" />
-                                        </li>
-                                    </t>
-                                </ul>
-                            </td>
-                            <td>
-                                <input type="number"
-                                       min="0"
-                                       t-att-value="0"
-                                       t-on-change="(e) => on_quantity_change(product.id, e.target.value)" />
-                            </td>
-                            <td>
-                                <button type="button"
-                                        t-on-click="() => on_add_to_cart(product.id)">
-                                    Ajouter au panier
-                                </button>
-                            </td>
-                        </tr>
-                    </t>
+                    <tr t-foreach="allProducts" t-as="product" t-key="product.id" t-att-data-product-id="product.id">
+                        <td><t t-esc="product.name"/></td>
+                        <td><t t-esc="product.description_sale"/></td>
+                        <td><t t-esc="product.lst_price"/> €</td>
+                        <td>
+                            <input type="number"
+                                   min="0"
+                                   t-att-value="productsQuantity[product.id] || 0"
+                                   t-on-change="onQuantityChange"
+                                   class="form-control"
+                                   style="width: 80px;" />
+                        </td>
+                        <td>
+                            <button type="button"
+                                    class="btn btn-primary"
+                                    t-on-click="addToCart">
+                                Ajouter au panier
+                            </button>
+                        </td>
+                    </tr>
                 </tbody>
             </table>
-
-            <div class="view-cart-container">
-                <button type="button" t-on-click="on_view_cart">
-                    Voir le panier
-                </button>
-            </div>
-
+        </div>
     </t>
 </templates>
