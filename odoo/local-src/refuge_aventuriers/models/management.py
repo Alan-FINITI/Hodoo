@@ -22,6 +22,7 @@ class RefugeManagement(models.Model):
                 'id',
                 'categ_id',
                 'bom_ids',  # IDs des nomenclatures associées
+                'available_in_pos'
             ]
         )
 
@@ -67,23 +68,26 @@ class RefugeManagement(models.Model):
                         'ingredients': line_by_bom.get(bom['id'], [])
                     }
 
-        # Ajouter l'URL de l'image et les données de nomenclature pour chaque produit
+        available_products = []
         for product in products:
-            self._logger.info(product)
-            # Ajouter l'URL de l'image
-            if product.get('image_1920'):
-                product[
-                    'image_url'] = f"http://localhost:8070/web/image?model=product.template&id={product['id']}&field=image_1920"
-            else:
-                product['image_url'] = None
+            if product['available_in_pos']:
+                self._logger.info(product)
+                # Ajouter l'URL de l'image
+                if product.get('image_1920'):
+                    product[
+                        'image_url'] = f"http://localhost:8070/web/image?model=product.template&id={product['id']}&field=image_1920"
+                else:
+                    product['image_url'] = None
 
-            # Ajouter les données de nomenclature
-            product_id = product['id']
-            if product_id in bom_data:
-                product['ingredients'] = bom_data[product_id]['ingredients']
-            else:
-                product['ingredients'] = []
+                # Ajouter les données de nomenclature
+                product_id = product['id']
+                if product_id in bom_data:
+                    product['ingredients'] = bom_data[product_id]['ingredients']
+                else:
+                    product['ingredients'] = []
+
+                available_products.append(product)
 
         return {
-            "product.template": products,
+            "product.template": available_products,
         }

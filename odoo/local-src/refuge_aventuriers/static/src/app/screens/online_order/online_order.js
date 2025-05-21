@@ -17,6 +17,7 @@ export class OnlineOrderScreen extends Component {
                 // Assure-toi d'accéder aux produits selon ton backend
                 this.allProducts.splice(0);
                 this.allProducts.push(...(result["product.template"] || []));
+
             } catch (e) {
                 console.error("Erreur RPC :", e);
             }
