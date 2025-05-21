@@ -17,12 +17,15 @@ export class OnlineOrderScreen extends Component {
                 // Assure-toi d'accéder aux produits selon ton backend
                 this.allProducts.splice(0);
                 this.allProducts.push(...(result["product.template"] || []));
-
+                const order = await this.rpc("/refuge_aventuriers/new_order");
+                console.log(order)
+                this.orderId = order.Id;
             } catch (e) {
                 console.error("Erreur RPC :", e);
             }
         });
     }
+
 }
 
 registry.category("refuge_screens").add("OnlineOrderScreen", OnlineOrderScreen);

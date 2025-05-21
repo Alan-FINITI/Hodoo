@@ -22,7 +22,8 @@ class RefugeManagement(models.Model):
                 'id',
                 'categ_id',
                 'bom_ids',  # IDs des nomenclatures associées
-                'available_in_pos'
+                'available_in_pos',
+                'qty_available',
             ]
         )
 
@@ -70,7 +71,7 @@ class RefugeManagement(models.Model):
 
         available_products = []
         for product in products:
-            if product['available_in_pos']:
+            if product['available_in_pos'] and product['qty_available']:
                 self._logger.info(product)
                 # Ajouter l'URL de l'image
                 if product.get('image_1920'):
