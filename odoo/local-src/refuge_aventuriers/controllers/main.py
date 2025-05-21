@@ -30,22 +30,28 @@ class RefugeController(http.Controller):
         #         'error': 'No active POS session found.',
         #     }
         # # Préparer les lignes de commande avec une ligne de base vide
-        order_lines = []
-        generic_product = Product.search([], limit=1)  # Juste obtenir un produit disponible
-        if generic_product:
-            order_lines = [(0, 0, {
-                'product_id': generic_product.id,
-                'qty': 0,
-                'price_unit': 0.0,
-                'price_subtotal': 0.0,
-                'price_subtotal_incl': 0.0,
-                'qty_returned': 0,
-                'discount': 0,
-            })]
+        # order_lines = []
+        # generic_product = Product.search([], limit=1)  # Juste obtenir un produit disponible
+        # if generic_product:
+        #     order_lines = [(0, 0, {
+        #         'product_id': generic_product.id,
+        #         'qty': 0,
+        #         'price_unit': 0.0,
+        #         'discount': 0,
+        #     })]
         order_vals = {
-            'order_line': order_lines,
-            'session_id': active_session.id,  # Ajouter l'ID de la session active
+            'session_id': active_session.id,
+            'company_id': active_session.company_id.id,
+            'amount_tax': 0.0,
+            'amount_total': 0.0,
+            'amount_paid': 0.0,
+            'amount_return': 0.0,
+            'state': 'draft',  # important si pas défini par défaut
+            'pricelist_id': active_session.config_id.pricelist_id.id,  # souvent obligatoire
+            'fiscal_position_id': None,  # facultatif si pas géré
+            'user_id': request.env.uid,
         }
+
         new_order = PosOrder.create(order_vals)
 
         return new_order
