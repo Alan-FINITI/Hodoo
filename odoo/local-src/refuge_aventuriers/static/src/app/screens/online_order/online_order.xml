@@ -2,23 +2,29 @@
 <templates id="template" xml:space="preserve">
     <t t-name="refuge_aventuriers.OnlineOrderScreen">
         <h2>Produits disponibles</h2>
-
+        <div class="view-cart-container">
+            <button type="button" t-on-click="onViewCart" class="view-cart-button">
+                Voir le panier
+            </button>
+        </div>
         <div class="product-grid">
             <t t-foreach="allProducts" t-as="product" t-key="product.id">
                 <div class="product-card">
                     <div class="product-image">
-                        <img t-att-src="product.image_url" alt="Image" />
+                        <img t-att-src="product.image_url" alt="Image"/>
                     </div>
                     <div class="product-info">
-                        <h4 t-esc="product.name" />
-                        <p class="product-price"><t t-esc="product.list_price" /> €</p>
+                        <h4 t-esc="product.name"/>
+                        <p class="product-price"><t t-esc="product.list_price" />
+                            €</p>
                         <div class="product-ingredients">
                             <ul>
                                 <t t-foreach="product.ingredients" t-as="ing" t-key="ing.product_name">
                                     <li>
-                                        <t t-esc="ing.product_name" /> —
-                                        <t t-esc="ing.quantity" />
-                                        <t t-esc="ing.uom" />
+                                        <t t-esc="ing.product_name"/>
+                                        —
+                                        <t t-esc="ing.quantity"/>
+                                        <t t-esc="ing.uom"/>
                                     </li>
                                 </t>
                             </ul>
@@ -29,7 +35,7 @@
                                    t-att-value="productsQuantity[product.id] || 0"
                                    t-att-id="product.id"
                                    t-on-change="onQuantityChange"
-                                   class="product-quantity-input" />
+                                   class="product-quantity-input"/>
                             <button type="button"
                                     t-on-click="() => on_add_to_cart(product.id)"
                                     class="add-to-cart-button">
@@ -41,10 +47,6 @@
             </t>
         </div>
 
-        <div class="view-cart-container">
-            <button type="button" t-on-click="onViewCart" class="view-cart-button">
-                Voir le panier
-            </button>
-        </div>
+
     </t>
 </templates>

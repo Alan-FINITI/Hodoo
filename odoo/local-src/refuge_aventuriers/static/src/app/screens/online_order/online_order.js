@@ -3,6 +3,7 @@
 import { registry } from "@web/core/registry";
 import { Component, onMounted, useState } from "@odoo/owl";
 import { useService } from "@web/core/utils/hooks";
+import { useRefuge } from "@refuge_aventuriers/app/store/refuge_hook";
 
 export class OnlineOrderScreen extends Component {
     static template = "refuge_aventuriers.OnlineOrderScreen";
@@ -14,6 +15,7 @@ export class OnlineOrderScreen extends Component {
         // Structure JS pure pour accumuler les lignes
         this.localOrder = { lines: [] };
         this.rpc = useService("rpc");
+        this.refuge = useRefuge();
 
         onMounted(async () => {
             try {
@@ -25,10 +27,10 @@ export class OnlineOrderScreen extends Component {
                     this.productsQuantity[p.id] = 0;
                 }
 
-                // 2. Création côté serveur d'une commande vide
-                const orderId = await this.rpc("/refuge_aventuriers/new_order");
-                this.orderId = orderId.match(/\d+/)[0];               // garde juste l'ID
-                this.localOrder.lines = [];           // initialise proprement
+            // 2. Création côté serveur d'une commande vide
+            this.orderId = await this.rpc("/refuge_aventuriers/new_order");
+            this.localOrder.lines = [];
+
             } catch (e) {
                 console.error("Erreur RPC :", e);
             }
@@ -73,6 +75,7 @@ export class OnlineOrderScreen extends Component {
         } catch (e) {
             console.error("Erreur lors de l'envoi de la commande :", e);
         }
+    this.refuge.showScreen('BagCommandScreen', {"orderId": this.orderId})
     }
 }
 
