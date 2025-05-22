@@ -148,19 +148,19 @@ class RefugeController(http.Controller):
 
     @http.route("/orders/get", type="json", auth="public", csrf=False)
     def get_orders(self, **kwargs):
-        orders = request.env["refuge.order"].sudo().search([])
+        orders = request.env["pos.order"].sudo().search([])
 
         result = []
         for order in orders:
             result.append({
                 "id": order.id,
-                "name": order.name,  # hérité de pos.order
+                "name": order.name,
                 "client_id": order.client_id.id if order.client_id else None,
                 "client_name": order.client_id.name if order.client_id else None,
                 "discount": order.discount,
                 "state": order.state,
-                "date_order": order.date_order,  # hérité de pos.order
-                "amount_total": order.amount_total,  # hérité de pos.order
+                "date_order": order.date_order,
+                "amount_total": order.amount_total,
             })
 
         return {"orders": result}
@@ -175,8 +175,32 @@ class RefugeController(http.Controller):
             # 'email': user.email,
         }
 
+    @http.route('/refuge/update_order_state', type='json', auth='user', csrf=False)
+    def update_order_state(self, order_id):
+        # 1. Vérifier qu'on a reçu un ID
+        if not order_id:
+            return {'error': 'Missing order_id'}
+
+        # 2. Récupérer la commande en draft ou tout état voulu
+        order = request.env['pos.order'].sudo().browse(int(order_id))
+        if not order or not order.exists():
+            return {'error': 'Order not found'}
+
+        # 3. Appeler la méthode de transition (action_next_state passe au prochain état)
+        try:
+            order.action_next_state()
+        except Exception as e:
+            return {'error': f"Failed to update state: {e}"}
+
+        # 4. Retourner le nouvel état
+        return {
+            'success': True,
+            'order_id': order.id,
+            'new_state': order.state,
+        }
+
     @http.route('/refuge/get_order_info', type='json', auth='user')
-    def get_order_info(self, order_id=None):
+    def get_order_info(self, order_id):
         if not order_id:
             return {'error': 'Missing order_id'}
 

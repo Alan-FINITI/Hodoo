@@ -2,4 +2,3 @@ id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
 refuge_aventuriers.access_refuge_order,Access Refuge Order,refuge_aventuriers.model_refuge_order,base.group_user,1,1,1,1
 refuge_aventuriers.access_refuge_order_admin,Access Refuge Order Admin,refuge_aventuriers.model_refuge_order,base.group_system,1,1,1,1
 refuge_aventuriers.access_client_order,Access Client Order,refuge_aventuriers.model_client_order,base.group_user,1,1,1,1
-refuge_aventuriers.access_client_order_admin,Access Client Order Admin,refuge_aventuriers.model_client_order,base.group_system,1,1,1,1

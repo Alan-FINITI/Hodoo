@@ -4,7 +4,6 @@ import logging
 _logger = logging.getLogger(__name__)
 
 class OrderRefuge(models.Model):
-    _name = "refuge.order"
     _inherit = "pos.order"
     _description = "Refuge order online"
 

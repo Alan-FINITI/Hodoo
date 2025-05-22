@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <templates id="template" xml:space="preserve">
     <t t-name="refuge_aventuriers.BagCommandScreen">
-        <t t-if="order">
+        <t t-if="state.order">
             <div class="bag-command-container">
                 <span>commande de bz frr trop le fun</span>
 
@@ -14,30 +14,20 @@
                         </tr>
                     </thead>
                     <tbody>
-                        <t t-foreach="order.orderlines" t-as="order_line" t-key="order_line.id">
+                        <t t-foreach="state.order.orderlines" t-as="order_line" t-key="order_line.id">
                             <tr class="table-row">
                                 <td class="table-data" t-esc="order_line.product.display_name"></td>
-
                                 <td class="table-data">
                                     <input type="number"
                                            min="0"
                                            t-att-value="order_line.quantity"
-                                           t-on-change="() => on_change_quantity(order_line.product.id, $event.target.value)" />
+                                           t-on-change="(ev) => on_change_quantity(order_line.product.id[0], $event.target.value)" />
                                 </td>
-
                                 <td class="table-data" t-esc="order_line.price_display"></td>
                             </tr>
                         </t>
                     </tbody>
                 </table>
-
-                <div>
-                    <span>Remise client : <t t-esc="order.client_id.discount"/> %</span>
-                </div>
-
-                <div>
-                    <span>Prix total de la commande : <t t-esc="order.amount_total"/> €</span>
-                </div>
 
                 <div class="order-button-container">
                     <button type="button" t-on-click="on_order_button_click">Commander</button>

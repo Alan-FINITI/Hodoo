@@ -1,73 +1,86 @@
 /** @odoo-module */
-
 import { registry } from "@web/core/registry";
 import { useRefuge } from "@refuge_aventuriers/app/store/refuge_hook";
 import { useService } from "@web/core/utils/hooks";
-import { Component, onMounted } from "@odoo/owl";
-import { rpc } from "@web/core/network/rpc_service";
-
-// import { usePopup } from "@web/core/popups/popup_service";
+import { Component, onMounted, useState } from "@odoo/owl";
 
 export class BagCommandScreen extends Component {
     static template = "refuge_aventuriers.BagCommandScreen";
 
     setup() {
+        this.state = useState({
+            order: null,
+            currentUser: null,
+            total: 0,
+        });
+
         this.refuge = useRefuge();
-        this.order = null;
-        this.currentUser = null;
-        this.total = 0;
         this.rpc = useService("rpc");
-        console.log(this.props.orderId)
-        this.orderId=this.props.orderId
+
+        this.orderId = this.props.orderId;
+
         onMounted(async () => {
             try {
-                console.log(this.orderId)
                 const order = await this.rpc('/refuge/get_order_info', {
                     order_id: this.orderId
                 });
 
-
-
                 if (order.error) {
                     console.error("Erreur:", order.error);
                 } else {
-                    this.order = order;
-                    console.log("Commande chargée:", this.order);
+                    this.state.order = order;
                 }
 
-                // 2. Récupérer l'utilisateur courant
                 const userData = await this.rpc('/refuge/get_current_user_info', {});
-                console.log("Utilisateur connecté :", userData);
-                this.currentUser = userData;
-
-                // 3. Calcul du total
-                this.total = 0;
-                this.order.orderlines.forEach(line => {
-                    this.total += parseInt(line.quantity) * parseFloat(line.price_unit);
-                });
+                this.state.currentUser = userData;
+                console.log(this.state.currentUser)
+                this.computeTotal();
+                console.log(this.state.total)
             } catch (e) {
                 console.error("Erreur RPC :", e);
             }
         });
     }
 
-    async on_order_button_click(field, value) {
-        try {
-            await this.refuge.orm.call("refuge.order", "action_next_state", [
-                [this.order.id]
-            ]);
+    computeTotal() {
+        if (!this.state.order || !this.state.order.orderlines) return;
 
-            await this.refuge.orm.call("refuge.order", "client_update", [
-                [this.currentUser.id]
-            ]);
-
-            // Optionnel : Popup
-            // this.popup.add({...});
-
-        } catch (error) {
-            console.error("Erreur lors de l’envoi de la commande :", error);
-        }
+        let total = 0;
+        this.state.order.orderlines.forEach(line => {
+            total += parseInt(line.quantity) * parseFloat(line.price_unit);
+        });
+        this.state.total = total;
     }
+
+   async on_order_button_click() {
+    try {
+        // 1) Appel RPC pour passer la commande au next state
+        const result = await this.rpc('/refuge/update_order_state', {
+            order_id: this.orderId,
+        });
+        if (result.error) {
+            console.error("Erreur serveur :", result.error);
+            return;
+        }
+        // 2) Mettre à jour localement l'état de la commande
+        this.state.order.state = result.new_state;
+        console.info("Nouvel état :", result.new_state);
+
+        // 3) Appel RPC pour mettre à jour le client si besoin
+        const clientResult = await this.rpc('/refuge/update_client_for_order', {
+            order_id: this.state.order.id,
+            client_id: this.state.currentUser.id,
+        });
+        if (clientResult.error) {
+            console.error("Erreur update client :", clientResult.error);
+        }
+
+    } catch (error) {
+        console.error("Erreur lors de l’envoi de la commande :", error);
+    }
+    this.refuge.showScreen('OnlineOrderScreen');
+}
+
 
     async on_change_quantity(productId, newQty) {
         try {
@@ -78,15 +91,20 @@ export class BagCommandScreen extends Component {
             }
 
             const response = await this.refuge.orm.call("refuge.order", "update_product_quantity", [
-                this.order.id,
+                this.state.order.id,
                 productId,
                 quantity
             ]);
 
-            if (response.error) {
-                console.error("Erreur Odoo :", response.error);
+            if (!response.error) {
+                // Met à jour la ligne dans l'état
+                const line = this.state.order.orderlines.find(l => l.product_id === productId);
+                if (line) {
+                    line.quantity = quantity;
+                    this.computeTotal(); // Recalcule total
+                }
             } else {
-                console.log("Quantité mise à jour :", response.qty);
+                console.error("Erreur Odoo :", response.error);
             }
 
         } catch (error) {
