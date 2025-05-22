@@ -61,13 +61,12 @@ class RefugeController(http.Controller):
         return new_order.id
 
     @http.route('/refuge_aventuriers/update_order', type='json', auth='public', csrf=False)
-    def update_order(self, order_id, lines):
+    def update_order(self, order_id, lines, table_number):
         Order = request.env['pos.order'].sudo().browse(int(order_id))
         if not Order.exists():
             return {'error': 'Commande introuvable.'}
         if Order.state != 'draft':
             return {'error': 'La commande doit être en état draft pour être modifiée.'}
-
         # 1) Supprimer toutes les lignes existantes
         request.env['pos.order.line'].sudo().search([('order_id', '=', Order.id)]).unlink()
 
@@ -122,7 +121,8 @@ class RefugeController(http.Controller):
 
         # 3) Mise à jour du total de la commande
         Order.write({
-            'amount_total': total_ttc
+            'amount_total': total_ttc,
+            'table_number': table_number
         })
 
         return {
@@ -175,6 +175,32 @@ class RefugeController(http.Controller):
             # 'email': user.email,
         }
 
+    @http.route('/orders/details', type='json', auth='user')
+    def get_order_detail(self, order_id):
+        order = request.env['pos.order'].sudo().browse(order_id)
+        if not order.exists():
+            return {'error': 'Commande introuvable'}
+
+        lines = []
+        for line in order.lines:
+            lines.append({
+                'product_id': line.product_id.id,
+                'product_name': line.product_id.name,
+                'qty': line.qty,
+                'price_unit': line.price_unit,
+                'discount': line.discount,
+                'total': line.price_subtotal_incl,
+            })
+
+        return {
+            'order_id': order.id,
+            'order_name': order.name,
+            'client': order.partner_id.name if order.partner_id else None,
+            'state': order.state,
+            'amount_total': order.amount_total,
+            'lines': lines,
+        }
+
     @http.route('/refuge/update_order_state', type='json', auth='user', csrf=False)
     def update_order_state(self, order_id):
         # 1. Vérifier qu'on a reçu un ID
@@ -199,6 +225,22 @@ class RefugeController(http.Controller):
             'new_state': order.state,
         }
 
+    @http.route('/refuge/update_table_number', type='json', auth='user')
+    def update_table_number(self, orderId, tableNumber):
+        order = request.env['refuge.order'].sudo().browse(int(orderId))
+        if not order or not order.exists():
+            return {'error': 'Order not found'}
+
+        try:
+            order.update_table_number(tableNumber)
+        except Exception as e:
+            return {'error': f"Failed to update state: {e}"}
+
+        return {
+            'success': True,
+            'order_id': order.id,
+            'new_table': order.table_number,
+        }
     @http.route('/refuge/get_order_info', type='json', auth='user')
     def get_order_info(self, order_id):
         if not order_id:

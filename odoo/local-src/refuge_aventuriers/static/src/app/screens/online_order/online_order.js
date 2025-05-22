@@ -12,6 +12,7 @@ export class OnlineOrderScreen extends Component {
         this.allProducts = useState([]);
         this.productsQuantity = {};
         this.orderId = null;
+        this.table_number = 1;
         // Structure JS pure pour accumuler les lignes
         this.localOrder = { lines: [] };
         this.rpc = useService("rpc");
@@ -70,6 +71,7 @@ export class OnlineOrderScreen extends Component {
             await this.rpc("/refuge_aventuriers/update_order", {
                 order_id: this.orderId,
                 lines: this.localOrder.lines,
+                table_number: this.table_number,
             });
             console.info("Commande mise à jour !");
         } catch (e) {

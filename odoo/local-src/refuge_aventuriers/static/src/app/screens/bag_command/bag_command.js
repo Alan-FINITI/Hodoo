@@ -110,7 +110,15 @@ export class BagCommandScreen extends Component {
         } catch (error) {
             console.error("Erreur lors de l’appel RPC :", error);
         }
+
     }
+    async on_change_table_number(tableNumber) {
+    const response = await this.refuge.orm.call("refuge.order", "update_table_number", {
+        orderId: this.orderId,
+        tableNumber: tableNumber
+    });
+}
+
 }
 
 registry.category("refuge_screens").add("BagCommandScreen", BagCommandScreen);

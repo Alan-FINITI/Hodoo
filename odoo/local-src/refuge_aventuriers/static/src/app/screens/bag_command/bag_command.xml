@@ -3,8 +3,6 @@
     <t t-name="refuge_aventuriers.BagCommandScreen">
         <t t-if="state.order">
             <div class="bag-command-container">
-                <span>commande de bz frr trop le fun</span>
-
                 <table class="command-table">
                     <thead>
                         <tr>
@@ -14,6 +12,7 @@
                         </tr>
                     </thead>
                     <tbody>
+                        <td t-esc="state.order.table_number" t-att-value="state.order.table_number"></td>
                         <t t-foreach="state.order.orderlines" t-as="order_line" t-key="order_line.id">
                             <tr class="table-row">
                                 <td class="table-data" t-esc="order_line.product.display_name"></td>
@@ -28,7 +27,17 @@
                         </t>
                     </tbody>
                 </table>
-
+                <div class="order-summary">
+                    <t t-if="order">
+                    <input type="number"
+                        t-att-min="1"
+                        t-att-max="15"
+                        t-att-value="order.table_number"
+                        t-on-change="(ev) => on_change_table_number(ev.target.value)"
+                        class="product-quantity-input" />
+                    </t>
+                    <p><strong>Total :</strong> <t t-esc="total" /> €</p>
+                </div>
                 <div class="order-button-container">
                     <button type="button" t-on-click="on_order_button_click">Commander</button>
                 </div>

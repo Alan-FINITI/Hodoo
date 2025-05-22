@@ -11,6 +11,10 @@ class OrderRefuge(models.Model):
         comodel_name="refuge.client",
         string="Client",
     )
+    client_id = fields.Many2one(
+        comodel_name="refuge.client",
+        string="Client",
+    )
     discount = fields.Float(
         string="Client Discount (%)",
         compute="_compute_client_discount",
@@ -23,7 +27,11 @@ class OrderRefuge(models.Model):
         ('done',      'Done'),
         ('cancelled', 'Cancelled'),
     ], string='Status', default='draft')
-
+    table_number = fields.Integer(string="Numéro de table", default=1)
+    @api.model
+    def update_table_number(self, tableNumber):
+        for record in self:
+            record.table_number = tableNumber
     @api.depends('client_id.discount')
     def _compute_client_discount(self):
         for order in self:
@@ -100,6 +108,6 @@ class OrderRefuge(models.Model):
                 'image_url': image_url,
             })
 
-        result = order.read(['id', 'partner_id', 'state'])[0]
+        result = order.read(['id', 'partner_id', 'state', 'table_number'])[0]
         result['lines'] = lines
         return result
