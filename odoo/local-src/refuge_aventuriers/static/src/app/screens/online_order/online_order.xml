@@ -1,40 +1,50 @@
+<?xml version="1.0" encoding="UTF-8"?>
 <templates id="template" xml:space="preserve">
-    <t t-name="refuge_aventuriers.OnlineOrderScreen" owl="1">
-        <div class="container mt-5">
-            <h1 class="mb-4">Commandes en ligne</h1>
-            <table class="table table-striped">
-                <thead>
-                    <tr>
-                        <th>Nom</th>
-                        <th>Description</th>
-                        <th>Prix</th>
-                        <th>Quantité</th>
-                        <th>Action</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <tr t-foreach="allProducts" t-as="product" t-key="product.id" t-att-data-product-id="product.id">
-                        <td><t t-esc="product.name"/></td>
-                        <td><t t-esc="product.description_sale"/></td>
-                        <td><t t-esc="product.lst_price"/> €</td>
-                        <td>
+    <t t-name="refuge_aventuriers.OnlineOrderScreen">
+        <h2>Produits disponibles</h2>
+
+        <div class="product-grid">
+            <t t-foreach="allProducts" t-as="product" t-key="product.id">
+                <div class="product-card">
+                    <div class="product-image">
+                        <img t-att-src="product.image_url" alt="Image" />
+                    </div>
+                    <div class="product-info">
+                        <h4 t-esc="product.name" />
+                        <p class="product-price"><t t-esc="product.list_price" /> €</p>
+                        <div class="product-ingredients">
+                            <ul>
+                                <t t-foreach="product.ingredients" t-as="ing" t-key="ing.product_name">
+                                    <li>
+                                        <t t-esc="ing.product_name" /> —
+                                        <t t-esc="ing.quantity" />
+                                        <t t-esc="ing.uom" />
+                                    </li>
+                                </t>
+                            </ul>
+                        </div>
+                        <div class="product-actions">
                             <input type="number"
                                    min="0"
                                    t-att-value="productsQuantity[product.id] || 0"
+                                   t-att-id="product.id"
                                    t-on-change="onQuantityChange"
-                                   class="form-control"
-                                   style="width: 80px;" />
-                        </td>
-                        <td>
+                                   class="product-quantity-input" />
                             <button type="button"
-                                    class="btn btn-primary"
-                                    t-on-click="addToCart">
+                                    t-on-click="() => on_add_to_cart(product.id)"
+                                    class="add-to-cart-button">
                                 Ajouter au panier
                             </button>
-                        </td>
-                    </tr>
-                </tbody>
-            </table>
+                        </div>
+                    </div>
+                </div>
+            </t>
+        </div>
+
+        <div class="view-cart-container">
+            <button type="button" t-on-click="onViewCart" class="view-cart-button">
+                Voir le panier
+            </button>
         </div>
     </t>
 </templates>

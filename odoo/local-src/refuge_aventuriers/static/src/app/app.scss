@@ -1,2 +1,82 @@
-.refuge-content {
+.product-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 20px;
+}
+
+.product-card {
+    display: flex;
+    border: 1px solid #ccc;
+    padding: 10px;
+    border-radius: 8px;
+    background-color: #fff;
+}
+
+.product-image img {
+    height: 80px;
+    width: 80px;
+    object-fit: cover;
+    border-radius: 4px;
+}
+
+.product-info {
+    margin-left: 10px;
+    flex: 1;
+}
+
+.product-info h4 {
+    margin: 0 0 5px 0;
+}
+
+.product-price {
+    margin: 0 0 5px 0;
+    font-weight: bold;
+}
+
+.product-ingredients ul {
+    margin: 0;
+    padding-left: 15px;
+    font-size: 0.9em;
+}
+
+.product-actions {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-top: 5px;
+}
+
+.product-quantity-input {
+    width: 80px;
+}
+
+.add-to-cart-button {
+    padding: 5px 10px;
+    background-color: #007bff;
+    color: white;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+}
+
+.add-to-cart-button:hover {
+    background-color: #0056b3;
+}
+
+.view-cart-container {
+    margin-top: 20px;
+    text-align: right;
+}
+
+.view-cart-button {
+    padding: 8px 16px;
+    background-color: #28a745;
+    color: white;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+}
+
+.view-cart-button:hover {
+    background-color: #218838;
 }

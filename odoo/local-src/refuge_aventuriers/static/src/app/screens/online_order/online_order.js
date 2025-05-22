@@ -9,27 +9,26 @@ export class OnlineOrderScreen extends Component {
 
     setup() {
         this.allProducts = useState([]);
-        this.rpc = useService("rpc");
         this.productsQuantity = {};
-        this.order = null;
         this.orderId = null;
+        // Structure JS pure pour accumuler les lignes
+        this.localOrder = { lines: [] };
+        this.rpc = useService("rpc");
 
         onMounted(async () => {
             try {
+                // 1. Chargement des produits
                 const result = await this.rpc("/refuge_aventuriers/load_refuge_data");
                 const products = result["product.template"] || [];
-
-                this.allProducts.splice(0);
-                this.allProducts.push(...products);
-
-                for (const product of products) {
-                    this.productsQuantity[product.id] = 0;
+                this.allProducts.splice(0, this.allProducts.length, ...products);
+                for (const p of products) {
+                    this.productsQuantity[p.id] = 0;
                 }
 
-                const order = await this.rpc("/refuge_aventuriers/new_order");
-                this.order = order;
-                this.orderId = order.id;
-                this.order.lines = []; // on initialise une liste de lignes
+                // 2. Création côté serveur d'une commande vide
+                const orderId = await this.rpc("/refuge_aventuriers/new_order");
+                this.orderId = orderId.match(/\d+/)[0];               // garde juste l'ID
+                this.localOrder.lines = [];           // initialise proprement
             } catch (e) {
                 console.error("Erreur RPC :", e);
             }
@@ -37,42 +36,42 @@ export class OnlineOrderScreen extends Component {
     }
 
     onQuantityChange(ev) {
-        const productId = parseInt(ev.target.closest("tr").dataset.productId);
-        const quantity = parseInt(ev.target.value) || 0;
+        const productId = parseInt(ev.target.id);
+        const quantity = parseInt(ev.target.value, 10) || 0;
         this.productsQuantity[productId] = quantity;
-        console.log(this.productsQuantity)
     }
 
+    async onViewCart() {
+        if (!this.orderId) {
+            console.warn("Commande pas encore initialisée !");
+            return;
+        }
+        // Vide les lignes locales
+        this.localOrder.lines = [];
 
-    async on_view_cart() {
-        let hasProduct = false;
-        this.order.lines = []; // Réinitialise les lignes de commande
-
-        for (const [productId, quantity] of Object.entries(this.productsQuantity)) {
-            if (quantity > 0) {
-                hasProduct = true;
-                // Ajouter le produit et la quantité à la commande
-                this.order.lines.push({
-                    product_id: parseInt(productId),
-                    quantity: quantity,
+        // Construit les lignes à envoyer
+        for (const [productId, qty] of Object.entries(this.productsQuantity)) {
+            if (qty > 0) {
+                this.localOrder.lines.push({
+                    product_id: parseInt(productId, 10),
+                    quantity: qty,
                 });
             }
         }
 
-        if (!hasProduct) {
-            refuge.showScreen('BagCommandScreen', this.orderId);
-        } else {
-            try {
-                // Envoyer la commande au serveur
-                await this.rpc("/refuge_aventuriers/update_order", {
-                    order_id: this.orderId,
-                    lines: this.order.lines,
-                });
-            } catch (e) {
-                console.error("Erreur lors de l'envoi de la commande :", e);
-            }
-
-            refuge.showScreen('BagCommandScreen', this.orderId);
+        if (!this.localOrder.lines.length) {
+            console.log("Aucun produit sélectionné.");
+            return;
+        }
+        // Envoi au back
+        try {
+            await this.rpc("/refuge_aventuriers/update_order", {
+                order_id: this.orderId,
+                lines: this.localOrder.lines,
+            });
+            console.info("Commande mise à jour !");
+        } catch (e) {
+            console.error("Erreur lors de l'envoi de la commande :", e);
         }
     }
 }

@@ -56,6 +56,79 @@ class RefugeController(http.Controller):
 
         return new_order
 
+    from odoo import http
+    from odoo.http import request
+
+    class RefugeAventuriersController(http.Controller):
+
+        from odoo import http
+        from odoo.http import request
+
+        class RefugeAventuriersController(http.Controller):
+
+            @http.route('/refuge_aventuriers/update_order', type='json', auth='public', csrf=False)
+            def update_order(self, order_id, lines):
+                Order = request.env['pos.order'].sudo().browse(int(order_id))
+                if not Order.exists():
+                    return {'error': 'Commande introuvable.'}
+                if Order.state != 'draft':
+                    return {'error': 'La commande doit être en état draft pour être modifiée.'}
+
+                # 1) Supprimer toutes les lignes existantes
+                request.env['pos.order.line'].sudo().search([('order_id', '=', Order.id)]).unlink()
+
+                # 2) Créer les nouvelles lignes en renseignant TOUTES les colonnes obligatoires
+                Product = request.env['product.product'].sudo()
+                new_count = 0
+
+                for line in lines:
+                    prod_id = int(line.get('product_id', 0))
+                    qty = float(line.get('quantity', 0))
+                    if qty <= 0:
+                        continue
+
+                    prod = Product.browse(prod_id)
+                    if not prod.exists():
+                        continue
+
+                    # Prix unitaire et remise
+                    price_unit = prod.lst_price
+                    discount = 0.0
+
+                    # Calcul du subtotal HT
+                    price_subtotal = qty * price_unit * (1 - discount / 100.0)
+
+                    # Récupération des taxes du produit (ou fallback vide)
+                    taxes = prod.taxes_id.filtered(lambda t: t.company_id == Order.company_id)
+                    # Calcul du montant TTC
+                    price_subtotal_incl = price_subtotal
+                    for tax in taxes:
+                        # compute_excluded = False pour montant TTC
+                        tax_value = tax._compute_amount(price_subtotal, price_unit, qty, order=Order)
+                        price_subtotal_incl += tax_value
+
+                    # Nom de la ligne, reprend l'habitude POS
+                    line_name = "%s/%04d" % (Order.name, Order.sequence_number or 1)
+
+                    # Création de la ligne POS
+                    request.env['pos.order.line'].sudo().create({
+                        'order_id': Order.id,
+                        'product_id': prod.id,
+                        'qty': qty,
+                        'price_unit': price_unit,
+                        'discount': discount,
+                        'price_subtotal': price_subtotal,
+                        'price_subtotal_incl': price_subtotal_incl,
+                        'name': line_name,
+                    })
+                    new_count += 1
+
+                return {
+                    'success': True,
+                    'order_id': Order.id,
+                    'lines_count': new_count,
+                }
+
     @http.route('/refuge_aventuriers/get_pos_products', type='json', auth='public', csrf=False)
     def get_pos_products(self):
         products = request.env['product.product'].sudo().search([
